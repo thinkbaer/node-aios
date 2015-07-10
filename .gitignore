@@ -1,0 +1,5 @@
+node_modules/
+shadow.properties
+shadow_settings.properties
+*.shadow.js
+

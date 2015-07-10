@@ -1,0 +1,21 @@
+{
+  "name": "aios",
+  "version": "0.1.0",
+  "description": "Aios connector",
+  "main": "lib/server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Robert Kania",
+  "license": "MIT",
+  "dependencies": {
+    "bson": "~0.4.7",
+    "bson-ext": "~0.1.10",
+    "sockit-to-me": "~0.3.2",
+    "clone": "~1.0.2",
+    "merge": "~1.2.0"
+  },
+  "devDependencies": {
+    "mocha": "^2.2.5"
+  }
+}
