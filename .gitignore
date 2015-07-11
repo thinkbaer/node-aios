@@ -3,3 +3,5 @@ shadow.properties
 shadow_settings.properties
 *.shadow.js
 *.log
+.idea
+
