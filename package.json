@@ -21,7 +21,9 @@
   "keywords": [
     "jdbc",
     "driver",
-    "aios"
+    "aios",
+    "database",
+    "datasources"
   ],
   "dependencies": {
     "bson": "~0.4.7",
