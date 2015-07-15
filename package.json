@@ -1,7 +1,7 @@
 {
   "name": "aios",
-  "version": "0.1.1",
-  "description": "Aios connector",
+  "version": "0.1.2",
+  "description": "Socket client for Aios server",
   "main": "lib/server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -21,7 +21,9 @@
   "keywords": [
     "jdbc",
     "driver",
-    "aios"
+    "aios",
+    "database",
+    "datasources"
   ],
   "dependencies": {
     "bson": "~0.4.7",
