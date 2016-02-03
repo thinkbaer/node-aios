@@ -5,3 +5,4 @@ shadow_settings.properties
 *.log
 .idea
 .npmignore
+build/

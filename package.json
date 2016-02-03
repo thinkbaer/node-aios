@@ -3,8 +3,12 @@
   "version": "0.1.4",
   "description": "Socket client for Aios server",
   "main": "lib/server.js",
+  "engines": {
+      "node": "^4 || ^5"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "install": "CC=clang CXX=clang++ node-gyp configure build --verbose"
   },
   "author": {
     "name": "Robert Kania"
@@ -28,11 +32,11 @@
   "dependencies": {
     "bson": "~0.4.7",
     "bson-ext": "~0.1.10",
-    "sockit-to-me": "~1.0.2",
     "clone": "~1.0.2",
     "merge": "~1.2.0"
   },
   "devDependencies": {
-    "mocha": "^2.2.5"
+    "mocha": "^2.2.5",
+    "node-gyp": "^3.0.1"
   }
 }
