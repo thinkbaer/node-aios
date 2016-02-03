@@ -28,7 +28,7 @@
   "dependencies": {
     "bson": "~0.4.7",
     "bson-ext": "~0.1.10",
-    "sockit-to-me": "~0.3.2",
+    "sockit-to-me": "~1.0.2",
     "clone": "~1.0.2",
     "merge": "~1.2.0"
   },
