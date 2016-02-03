@@ -1,10 +1,10 @@
 {
   "name": "aios",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Socket client for Aios server",
   "main": "lib/server.js",
   "engines": {
-      "node": "^4 || ^5"
+    "node": "^4 || ^5"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
