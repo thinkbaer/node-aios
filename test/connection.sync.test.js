@@ -12,23 +12,6 @@ var bsonTypes = [b.Long, b.ObjectID, b.Binary,
 describe("connection tests", function () {
 
 
-    it("connect async to server with before declared connect event", function (done) {
-        var conn = new Connection();
-        conn.on('connect', function (_connection) {
-            conn.destroy();
-            done();
-        })
-
-        conn.connect()
-    })
-
-    it("connect async to server with direct callback bind", function (done) {
-        var conn = new Connection();
-        conn.connect(function (_connection) {
-            conn.destroy();
-            done();
-        })
-    })
 
     it("connect sync to server", function () {
         var conn = new Connection();
@@ -38,28 +21,6 @@ describe("connection tests", function () {
     })
 
 
-    it("send async ping message", function (done) {
-        var conn = new Connection();
-
-        // Add event listeners
-        conn.on('connect', function (_conn) {
-            var date = new Date();
-            var obj = {time: date};
-            var t = new Actions.Transport('sys.ping', obj);
-            _conn.write(t.toBin());
-        })
-
-        conn.on('data', function (response, _conn) {
-            console.log('ping', response.header, response.data)
-            _conn.destroy();
-
-            assert.equal('sys.ping', response.header.ns);
-            assert.equal(true, (response.data.duration > 0));
-            done()
-        })
-
-        conn.connect()
-    })
 
     it("send sync ping message", function () {
         var conn = new Connection();
