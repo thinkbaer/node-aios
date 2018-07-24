@@ -37,6 +37,7 @@
   },
   "devDependencies": {
     "mocha": "^2.2.5",
+    "node-cmake": "^2.5.1",
     "node-gyp": "^3.0.1"
   }
 }

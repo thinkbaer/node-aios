@@ -6,3 +6,4 @@ shadow_settings.properties
 .idea
 .npmignore
 build/
+cmake-build-debug/

@@ -1,0 +1,12 @@
+
+## Notes
+
+```
+ npm install --save-dev node-cmake
+ ncmake update
+```
+
+
+https://github.com/cmake-js/cmake-js/wiki/TUTORIAL-01-Creating-a-native-module-by-using-CMake.js-and-NAN
+
+

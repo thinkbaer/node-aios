@@ -12,4 +12,4 @@ void InitAll(Handle<Object> aExports) {
   Sockit::Init(aExports);
 }
 
-NODE_MODULE(sockit, InitAll)
+NODE_MODULE(sockit, InitAll);
