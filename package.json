@@ -30,6 +30,7 @@
     "datasources"
   ],
   "dependencies": {
+    "bluebird": "^3.4.0",
     "bson": "~0.4.7",
     "bson-ext": "~0.1.10",
     "clone": "~1.0.2",

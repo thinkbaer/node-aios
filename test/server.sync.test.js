@@ -51,7 +51,6 @@ describe("server tests", function () {
 
             var results = ds.executeBatch(createDBSchema);
             assert.equal(2, results.length);
-
         })
 
         it("clear tables db", function () {
@@ -60,7 +59,6 @@ describe("server tests", function () {
 
             var results = ds.execute('TRUNCATE TABLE car');
             assert.equal(1, results);
-
 
             var results = ds.execute('TRUNCATE TABLE owner');
             assert.equal(1, results);
