@@ -27,11 +27,9 @@
     "datasources"
   ],
   "dependencies": {
-    "bluebird": "^3.5.1",
     "bson": "~3.0.2",
     "bson-ext": "~2.0.1",
-    "clone": "~2.1.2",
-    "merge": "~1.2.0"
+    "lodash": "^4.17.10"
   },
   "devDependencies": {
     "mocha": "^5.2.0",
