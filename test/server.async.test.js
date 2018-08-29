@@ -1,7 +1,7 @@
 var assert = require('assert');
-var Server = require('./../lib/server')
+var Server = require('./../lib/server');
 
-var dsn = 'hsql_test'
+var dsn = 'hsql_test';
 var dsSpec = {
         type: 'jdbc',
         driver: 'org.hsqldb.jdbc.JDBCDriver',
@@ -9,19 +9,19 @@ var dsSpec = {
         url: "jdbc:hsqldb:file:/tmp/test_server/hsql1",
         user: 'SA',
         password: ''
-}
+};
 
 var createDBSchema =[
     'CREATE TABLE  IF NOT EXISTS car ( id INTEGER IDENTITY, type VARCHAR(256), name VARCHAR(256))',
     "CREATE TABLE  IF NOT EXISTS owner ( id INTEGER IDENTITY, surname VARCHAR(256), givenName VARCHAR(256))",
-]
+];
 
 var insertData = [
     "INSERT INTO car (type, name) VALUES('Ford', 'Mustang')",
     "INSERT INTO car (type, name) VALUES('Ford', 'Fiesta')",
     "INSERT INTO owner (surname,givenName) VALUES('Ford', 'Henry')"
 
-]
+];
 
 
 
@@ -39,7 +39,7 @@ describe("server async tests", function () {
                 done(err)
             })
 
-        })
+        });
 
 
         it("register datasource", function (done) {
@@ -47,7 +47,7 @@ describe("server async tests", function () {
                 assert.equal(true, res.getId() > 0);
                 done(err)
             });
-        })
+        });
 
 
         it("get registered datasource", function (done) {
@@ -56,7 +56,7 @@ describe("server async tests", function () {
                 done(err)
             });
 
-        })
+        });
 
         it("create db", function (done) {
             var ds = server.dataSource(dsn);
@@ -67,7 +67,7 @@ describe("server async tests", function () {
                 done(err)
             });
 
-        })
+        });
 
 
         it("clear tables db", function (done) {
@@ -85,7 +85,7 @@ describe("server async tests", function () {
             });
 
 
-        })
+        });
 
         it("insert data", function (done) {
             var ds = server.dataSource(dsn);
@@ -96,7 +96,7 @@ describe("server async tests", function () {
                 done(err);
             });
 
-        })
+        });
 
 
 
@@ -110,7 +110,7 @@ describe("server async tests", function () {
                 done(err);
             });
 
-        })
+        });
 
         it("query data", function (done) {
             var ds = server.dataSource(dsn);
@@ -121,7 +121,7 @@ describe("server async tests", function () {
                 done(err);
             });
 
-        })
+        });
 
         it("list catalogs", function (done) {
             var ds = server.dataSource(dsn);
@@ -132,7 +132,7 @@ describe("server async tests", function () {
                 done(err);
             });
 
-        })
+        });
 
         it("list tables", function (done) {
             var ds = server.dataSource(dsn);
@@ -153,4 +153,4 @@ describe("server async tests", function () {
 
     })
 
-})
+});

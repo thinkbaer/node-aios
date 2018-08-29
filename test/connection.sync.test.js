@@ -1,13 +1,6 @@
 var assert = require('assert');
-var Connection = require('./../lib/connection')
-var Actions = require('./../lib/actions')
-var b = require("bson");
-var BSON = b.native().BSON
-console.log(Connection)
-
-var bsonTypes = [b.Long, b.ObjectID, b.Binary,
-    b.Code, b.DBRef, b.Symbol, b.Double,
-    b.Timestamp, b.MaxKey, b.MinKey];
+var Connection = require('./../lib/connection');
+var Actions = require('./../lib/actions');
 
 describe("connection tests", function () {
 
@@ -18,31 +11,31 @@ describe("connection tests", function () {
         conn.connect();
         conn.destroy();
 
-    })
+    });
 
 
 
     it("send sync ping message", function () {
         var conn = new Connection();
-        conn.connect()
+        conn.connect();
 
         var date = new Date();
         var obj = {time: date};
         var t = new Actions.Transport('sys.ping', obj);
         var response = conn.write(t.toBin());
 
-        conn.destroy()
+        conn.destroy();
 
         assert.equal('sys.ping', response.header.ns);
         assert.equal(true, (response.data.duration > 0));
-    })
+    });
 
     it("synchronized create db and query it", function () {
         this.timeout(10000);
         var conn = new Connection();
-        conn.connect()
+        conn.connect();
 
-        var dsn = 'hsql_test'
+        var dsn = 'hsql_test';
         var ds = {
             method: 'register',
             spec: {
@@ -54,7 +47,7 @@ describe("connection tests", function () {
                 user: 'SA',
                 password: ''
             }
-        }
+        };
 
         var dsInitDB = {
             dsn: dsn,
@@ -68,7 +61,7 @@ describe("connection tests", function () {
                     "INSERT INTO owner (surname,givenName) VALUES('Ford', 'Henry')"
                 ]
             }
-        }
+        };
 
         var dsQueryDB = {
             dsn: dsn,
@@ -76,7 +69,7 @@ describe("connection tests", function () {
                 '@t':'jdbc.q.select',
                 sql:'SELECT * FROM car'
             }
-        }
+        };
 
 
         var dsQueryDB2 = {
@@ -85,7 +78,7 @@ describe("connection tests", function () {
                 '@t':'jdbc.q.update',
                 sql:'TRUNCATE TABLE car'
             }
-        }
+        };
 
         var dsQueryDB3 = {
             dsn: dsn,
@@ -93,48 +86,48 @@ describe("connection tests", function () {
                 '@t':'jdbc.q.exec',
                 sql:'TRUNCATE TABLE car'
             }
-        }
+        };
 
         var t = new Actions.Transport('ds', ds);
         var response = conn.write(t.toBin());
 
-        console.log('request', ds)
-        console.log('header', response.header)
-        console.log('data', response.data)
+        console.log('request', ds);
+        console.log('header', response.header);
+        console.log('data', response.data);
 
         t = new Actions.Transport('ds.query', dsInitDB);
         response = conn.write(t.toBin());
 
-        console.log('request', dsInitDB)
-        console.log('header', response.header)
-        console.log('data', response.data)
+        console.log('request', dsInitDB);
+        console.log('header', response.header);
+        console.log('data', response.data);
 
         t = new Actions.Transport('ds.query', dsQueryDB);
         response = conn.write(t.toBin());
 
-        console.log('request', dsQueryDB)
-        console.log('header', response.header)
-        console.log('data', response.data)
-        console.log('result', response.data.result.data)
+        console.log('request', dsQueryDB);
+        console.log('header', response.header);
+        console.log('data', response.data);
+        console.log('result', response.data.result.data);
 
         t = new Actions.Transport('ds.query', dsQueryDB2);
         response = conn.write(t.toBin());
 
-        console.log('request', dsQueryDB)
-        console.log('header', response.header)
-        console.log('data', response.data)
+        console.log('request', dsQueryDB);
+        console.log('header', response.header);
+        console.log('data', response.data);
 
 
         t = new Actions.Transport('ds.query', dsQueryDB3);
         response = conn.write(t.toBin());
 
-        console.log('request', dsQueryDB)
-        console.log('header', response.header)
-        console.log('data', response.data)
+        console.log('request', dsQueryDB);
+        console.log('header', response.header);
+        console.log('data', response.data);
 
 
         conn.destroy()
 
     })
 
-})
+});

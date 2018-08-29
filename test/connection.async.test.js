@@ -1,18 +1,14 @@
-var util = require('util')
+var util = require('util');
 var assert = require('assert');
-var Connection = require('./../lib/connection')
-var Actions = require('./../lib/actions')
+var Connection = require('./../lib/connection');
+var Actions = require('./../lib/actions');
 var b = require("bson");
 var Promise = require("bluebird");
-var BSON = b.native().BSON
-console.log(Connection)
 
-Connection.prototype.connectAsync = Promise.promisify(Connection.prototype.connect)
-Connection.prototype.writeAsync = Promise.promisify(Connection.prototype.write)
 
-var bsonTypes = [b.Long, b.ObjectID, b.Binary,
-    b.Code, b.DBRef, b.Symbol, b.Double,
-    b.Timestamp, b.MaxKey, b.MinKey];
+
+Connection.prototype.connectAsync = Promise.promisify(Connection.prototype.connect);
+Connection.prototype.writeAsync = Promise.promisify(Connection.prototype.write);
 
 
 describe("connection tests", function () {
@@ -22,9 +18,9 @@ describe("connection tests", function () {
         conn.on('connect', function (err, _conn) {
             _conn.destroy();
             done(err);
-        })
+        });
         conn.connect()
-    })
+    });
 
     it("connect async to server with direct callback bind", function (done) {
         var conn = new Connection();
@@ -32,7 +28,7 @@ describe("connection tests", function () {
             _conn.destroy();
             done(err);
         })
-    })
+    });
 
     it("connect async with promise bind", function (done) {
         var conn = new Connection();
@@ -40,10 +36,10 @@ describe("connection tests", function () {
             c.destroy();
             done();
         }).catch(function (err) {
-            console.error(err)
+            console.error(err);
             done(err)
         })
-    })
+    });
 
 
     it("send async ping message over emitter", function (done) {
@@ -55,19 +51,19 @@ describe("connection tests", function () {
             var obj = {time: date};
             var t = new Actions.Transport('sys.ping', obj);
             _conn.write(t.toBin());
-        })
+        });
 
         conn.on('data', function (err, response) {
-            console.log('ping', response.header, response.data)
+            console.log('ping', response.header, response.data);
             conn.destroy();
 
             assert.equal('sys.ping', response.header.ns);
             assert.equal(true, (response.data.duration > 0));
             done(err)
-        })
+        });
 
         conn.connect()
-    })
+    });
 
 
     it("send async ping message over callback", function (done) {
@@ -80,7 +76,7 @@ describe("connection tests", function () {
 
             var t = new Actions.Transport('sys.ping', obj);
             _conn.write(t.toBin(), function (err, response) {
-                console.log('ping', response.header, response.data)
+                console.log('ping', response.header, response.data);
                 _conn.destroy();
 
                 assert.equal('sys.ping', response.header.ns);
@@ -88,7 +84,7 @@ describe("connection tests", function () {
                 done(err)
             });
         })
-    })
+    });
 
 
     it("send async ping message over promise", function (done) {
@@ -102,7 +98,7 @@ describe("connection tests", function () {
             var t = new Actions.Transport('sys.ping', obj);
             return _conn.writeAsync(t.toBin())
         }).then(function (response) {
-            console.log('ping', response.header, response.data)
+            console.log('ping', response.header, response.data);
 
             assert.equal('sys.ping', response.header.ns);
             assert.equal(true, (response.data.duration >= 0));
@@ -113,13 +109,13 @@ describe("connection tests", function () {
         }).catch(function (err) {
             done(err)
         });
-    })
+    });
 
 
     it("asynchronized create db and query it", function (done) {
         this.timeout(10000);
 
-        var dsn = 'hsql_test'
+        var dsn = 'hsql_test';
         var ds = {
             method: 'register',
             spec: {
@@ -131,7 +127,7 @@ describe("connection tests", function () {
                 user: 'SA',
                 password: ''
             }
-        }
+        };
 
         var dsInitDB = {
             dsn: dsn,
@@ -145,7 +141,7 @@ describe("connection tests", function () {
                     "INSERT INTO owner (surname,givenName) VALUES('Ford', 'Henry')"
                 ]
             }
-        }
+        };
 
         var dsQueryDB = {
             dsn: dsn,
@@ -153,7 +149,7 @@ describe("connection tests", function () {
                 '@t': 'jdbc.q.select',
                 sql: 'SELECT * FROM car'
             }
-        }
+        };
 
 
         var dsQueryDB2 = {
@@ -162,7 +158,7 @@ describe("connection tests", function () {
                 '@t': 'jdbc.q.update',
                 sql: 'TRUNCATE TABLE car'
             }
-        }
+        };
 
         var dsQueryDB3 = {
             dsn: dsn,
@@ -170,7 +166,7 @@ describe("connection tests", function () {
                 '@t': 'jdbc.q.exec',
                 sql: 'TRUNCATE TABLE car'
             }
-        }
+        };
 
         var conn = new Connection();
         conn.connectAsync()
@@ -179,44 +175,44 @@ describe("connection tests", function () {
                 return _conn.writeAsync(t.toBin());
             })
             .then(function (response) {
-                console.log('request', ds)
-                console.log('header', response.header)
-                console.log('data', response.data)
+                console.log('request', ds);
+                console.log('header', response.header);
+                console.log('data', response.data);
 
                 var t = new Actions.Transport('ds.query', dsInitDB);
                 return conn.writeAsync(t.toBin());
             })
             .then(function (response) {
-                console.log('request', dsInitDB)
-                console.log('header', response.header)
-                console.log('data', response.data)
+                console.log('request', dsInitDB);
+                console.log('header', response.header);
+                console.log('data', response.data);
 
                 var t = new Actions.Transport('ds.query', dsQueryDB);
                 return conn.writeAsync(t.toBin());
             })
             .then(function (response) {
-                console.log('request', dsQueryDB)
-                console.log('header', response.header)
-                console.log('data', response.data)
-                console.log('result', response.data.result.data)
+                console.log('request', dsQueryDB);
+                console.log('header', response.header);
+                console.log('data', response.data);
+                console.log('result', response.data.result.data);
 
                 var t = new Actions.Transport('ds.query', dsQueryDB2);
                 return conn.writeAsync(t.toBin());
             })
             .then(function (response) {
-                console.log('request', dsQueryDB2)
-                console.log('header', response.header)
-                console.log('data', response.data)
-                console.log('result', response.data.result.data)
+                console.log('request', dsQueryDB2);
+                console.log('header', response.header);
+                console.log('data', response.data);
+                console.log('result', response.data.result.data);
 
                 var t = new Actions.Transport('ds.query', dsQueryDB3);
                 return conn.writeAsync(t.toBin());
             })
             .then(function (response) {
-                console.log('request', dsQueryDB2)
-                console.log('header', response.header)
-                console.log('data', response.data)
-                console.log('result', response.data.result.data)
+                console.log('request', dsQueryDB2);
+                console.log('header', response.header);
+                console.log('data', response.data);
+                console.log('result', response.data.result.data);
 
                 return conn.destroy();
             })
@@ -227,13 +223,13 @@ describe("connection tests", function () {
                 done(err)
             })
 
-    })
+    });
 
 
     it("asynchronized list tables", function (done) {
         this.timeout(10000);
 
-        var dsn = 'hsql_test'
+        var dsn = 'hsql_test';
         var ds = {
             method: 'register',
             spec: {
@@ -245,7 +241,7 @@ describe("connection tests", function () {
                 user: 'SA',
                 password: ''
             }
-        }
+        };
 
         var dsInitDB = {
             dsn: dsn,
@@ -259,7 +255,7 @@ describe("connection tests", function () {
                     "INSERT INTO owner (surname,givenName) VALUES('Ford', 'Henry')"
                 ]
             }
-        }
+        };
 
         var dsQueryDB = {
             dsn: dsn,
@@ -267,7 +263,7 @@ describe("connection tests", function () {
                 '@t': 'jdbc.q.table',
                 catalog:'PUBLIC',
             }
-        }
+        };
 
 
 
@@ -286,7 +282,7 @@ describe("connection tests", function () {
                 return conn.writeAsync(t.toBin());
             })
             .then(function (response) {
-                console.log(util.inspect(response))
+                console.log(util.inspect(response));
 
                 return conn.destroy();
             })
@@ -299,5 +295,5 @@ describe("connection tests", function () {
 
     })
 
-})
+});
 

@@ -1,6 +1,6 @@
 {
   "name": "aios",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "Socket client for Aios server",
   "main": "lib/server.js",
   "scripts": {
@@ -27,15 +27,15 @@
     "datasources"
   ],
   "dependencies": {
-    "bluebird": "^3.4.0",
-    "bson": "~0.4.7",
-    "bson-ext": "~0.1.10",
-    "clone": "~1.0.2",
+    "bluebird": "^3.5.1",
+    "bson": "~3.0.2",
+    "bson-ext": "~2.0.1",
+    "clone": "~2.1.2",
     "merge": "~1.2.0"
   },
   "devDependencies": {
-    "mocha": "^2.2.5",
+    "mocha": "^5.2.0",
     "node-cmake": "^2.5.1",
-    "node-gyp": "^3.0.1"
+    "node-gyp": "^3.8.0"
   }
 }
