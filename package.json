@@ -3,9 +3,6 @@
   "version": "0.1.6",
   "description": "Socket client for Aios server",
   "main": "lib/server.js",
-  "engines": {
-    "node": "^4 || ^5"
-  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "install": "CC=clang CXX=clang++ node-gyp configure build --verbose"

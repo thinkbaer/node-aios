@@ -1,0 +1,6 @@
+version: '3'
+services:
+  aios:
+    image: "thinkbaer/aios:0.2.0"
+    ports:
+    - "127.0.0.1:8118:8118"
