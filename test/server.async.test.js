@@ -61,7 +61,7 @@ describe("server async tests", function () {
       assert.equal(true, ds.getId() > 0);
 
       ds.executeBatch(createDBSchema, function (err, res) {
-        assert.equal(2, res.length);
+        assert.equal(2, res.batchResults.length);
         done(err)
       });
 
@@ -73,11 +73,11 @@ describe("server async tests", function () {
       assert.equal(true, ds.getId() > 0);
 
       ds.execute('TRUNCATE TABLE car', function (err, res) {
-        assert.equal(1, res);
+        assert.equal(1, res.affected);
 
 
         ds.execute('TRUNCATE TABLE owner', function (err2, res2) {
-          assert.equal(1, res2);
+          assert.equal(1, res.affected);
           done(err2)
         });
       });
@@ -90,7 +90,7 @@ describe("server async tests", function () {
       assert.equal(true, ds.getId() > 0);
 
       ds.executeBatch(insertData, function (err, res) {
-        assert.equal(3, res.length);
+        assert.equal(3, res.batchResults.length);
         done(err);
       });
 
@@ -102,7 +102,8 @@ describe("server async tests", function () {
       assert.equal(true, ds.getId() > 0);
 
       ds.update("INSERT INTO car (type, name) VALUES('Volvo', 'V70')", function (err, res) {
-        assert.equal(1, res);
+        assert.equal(1, res.affected);
+        assert.equal(1, res.data.length);
         done(err);
       });
 

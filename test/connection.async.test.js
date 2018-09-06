@@ -49,7 +49,6 @@ describe("connection tests", function () {
     });
 
     conn.on('data', function (err, response) {
-      console.log('ping', response.header, response.data);
       conn.destroy();
 
       assert.equal('sys.ping', response.header.ns);

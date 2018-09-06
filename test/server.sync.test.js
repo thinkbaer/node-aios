@@ -50,7 +50,7 @@ describe("server tests", function () {
       assert.equal(true, ds.getId() > 0);
 
       var results = ds.executeBatch(createDBSchema);
-      assert.equal(2, results.length);
+      assert.equal(2, results.batchResults.length);
     });
 
     it("clear tables db", function () {
@@ -58,10 +58,10 @@ describe("server tests", function () {
       assert.equal(true, ds.getId() > 0);
 
       var results = ds.execute('TRUNCATE TABLE car');
-      assert.equal(1, results);
+      assert.equal(1, results.affected);
 
       var results = ds.execute('TRUNCATE TABLE owner');
-      assert.equal(1, results);
+      assert.equal(1, results.affected);
 
     });
 
@@ -70,7 +70,7 @@ describe("server tests", function () {
       assert.equal(true, ds.getId() > 0);
 
       var results = ds.executeBatch(insertData);
-      assert.equal(3, results.length);
+      assert.equal(3, results.batchResults.length);
     });
 
     it("update data", function () {
@@ -78,7 +78,8 @@ describe("server tests", function () {
       assert.equal(true, ds.getId() > 0);
 
       var results = ds.update("INSERT INTO car (type, name) VALUES('Volvo', 'V70')");
-      assert.equal(1, results);
+      assert.equal(1, results.affected);
+      assert.equal(1, results.data.length);
     });
 
     it("query data", function () {
