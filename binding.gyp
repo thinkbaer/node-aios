@@ -10,6 +10,9 @@
       '"<@(gpp)"=="no"',
       { 'sources!': ['src/addon.c',
                      'src/sockit.cc'] }
-    ]]
+    ]],
+    "include_dirs": [
+      "<!(node -e \"require('nan')\")"
+    ]
   }]
 }

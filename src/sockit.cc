@@ -15,6 +15,7 @@
 
 #include <arpa/inet.h>
 #include <netdb.h>
+#include <nan.h>
 
 // Local includes
 #include "sockit.h"
@@ -102,7 +103,7 @@ Sockit::New(const FunctionCallbackInfo<Value>& aArgs) {
     const int argc = 0;
     Local<Value> argv[argc] = { };
     Local<Function> cons = Local<Function>::New(isolate, constructor);
-    aArgs.GetReturnValue().Set(cons->NewInstance(argc, argv));
+    aArgs.GetReturnValue().Set(Nan::NewInstance(cons, argc, argv).ToLocalChecked());
   }
 }
 
@@ -266,7 +267,7 @@ Sockit::Connect(const FunctionCallbackInfo<Value>& aArgs) {
       inet_addr(inet_ntoa(*(struct in_addr *)hostEntry->h_addr_list[0]));
   // Using static cast here to enforce short as required by IPv4 functions.
   address.sin_port =
-      htons(static_cast<short>(options->Get(portKey)->ToNumber()->Uint32Value()));
+      htons(static_cast<short>(options->Get(portKey)->ToNumber(isolate)->Uint32Value()));
 
   result = connect(
       sockit->mSocket, (sockaddr *) &address, sizeof(struct sockaddr)
@@ -361,7 +362,7 @@ Sockit::Read(const FunctionCallbackInfo<Value>& aArgs) {
   }
 
   // Figure out how many bytes the user wants us to read from the socket.
-  unsigned int bytesToRead = aArgs[0]->ToNumber()->Uint32Value();
+  unsigned int bytesToRead = aArgs[0]->ToNumber(isolate)->Uint32Value();
   // Allocate a shiny buffer.
   char *buffer = new char[bytesToRead];
   // Track how many bytes we've read and total bytes read.

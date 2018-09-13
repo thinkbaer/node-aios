@@ -33,6 +33,7 @@
   },
   "devDependencies": {
     "mocha": "^5.2.0",
+    "nan": "^2.11.0",
     "node-cmake": "^2.5.1",
     "node-gyp": "^3.8.0"
   }
