@@ -2,7 +2,7 @@ var assert = require('assert');
 var Connection = require('./../lib/connection');
 var Actions = require('./../lib/actions');
 
-describe("connection tests", function () {
+describe("connection sync tests", function () {
 
 
   it("connect sync to server", function () {
@@ -33,7 +33,7 @@ describe("connection tests", function () {
     var conn = new Connection();
     conn.connect();
 
-    var dsn = 'hsql_test';
+    var dsn = 'hsql_test_04';
     var ds = {
       method: 'register',
       spec: {

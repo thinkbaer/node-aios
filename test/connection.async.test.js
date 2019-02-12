@@ -6,7 +6,7 @@ var Actions = require('./../lib/actions');
 
 
 
-describe("connection tests", function () {
+describe("connection async tests", function () {
 
   it("connect async to server with before declared connect event", function (done) {
     var conn = new Connection();
@@ -109,7 +109,7 @@ describe("connection tests", function () {
   it("asynchronized create db and query it", function (done) {
     this.timeout(10000);
 
-    var dsn = 'hsql_test';
+    var dsn = 'hsql_test_03';
     var ds = {
       method: 'register',
       spec: {
@@ -223,7 +223,7 @@ describe("connection tests", function () {
   it("asynchronized list tables", function (done) {
     this.timeout(10000);
 
-    var dsn = 'hsql_test';
+    var dsn = 'hsql_test_03';
     var ds = {
       method: 'register',
       spec: {

@@ -1,39 +1,40 @@
 var assert = require('assert');
 var Server = require('./../lib/server');
 
+describe("server informix async tests", function () {
 
-describe("server async tests", function () {
-
-  var dsn_default = 'hsql_test_01';
-  var dsSpec_default = {
+  var dsn_informix = 'informix_test_01';
+  var dsSpec_informix = {
     type: 'jdbc',
-    driver: 'org.hsqldb.jdbc.JDBCDriver',
-    driverLocation: "http://central.maven.org/maven2/org/hsqldb/hsqldb/2.3.3/hsqldb-2.3.3.jar",
-    url: "jdbc:hsqldb:file:/tmp/test_server/hsql1",
-    user: 'SA',
-    password: ''
+    driver: 'com.informix.jdbc.IfxDriver',
+    driverLocation: "/data/java/driver/com.informix.ifxjdbc-4.10.JC4DE.jar",
+    url: "jdbc:informix-sqli://informix:9088/iot:INFORMIXSERVER=informix;DELIMITER=",
+    user: 'informix',
+    password: 'in4mix',
+    debug: true
   };
 
-  var createDBSchema_default = [
-    'CREATE TABLE  IF NOT EXISTS car ( id INTEGER IDENTITY, type VARCHAR(256), name VARCHAR(256))',
-    "CREATE TABLE  IF NOT EXISTS owner ( id INTEGER IDENTITY, surname VARCHAR(256), givenName VARCHAR(256))",
+  var createDBSchema_informix = [
+    'CREATE TABLE  IF NOT EXISTS car ( id SERIAL, type VARCHAR(32), name VARCHAR(32))',
+    "CREATE TABLE  IF NOT EXISTS owner ( id SERIAL, surname VARCHAR(32), givenName VARCHAR(32))",
   ];
 
-  var insertData_default = [
+  var insertData_informix = [
     "INSERT INTO car (type, name) VALUES('Ford', 'Mustang')",
     "INSERT INTO car (type, name) VALUES('Ford', 'Fiesta')",
     "INSERT INTO owner (surname,givenName) VALUES('Ford', 'Henry')"
-
   ];
 
 
-  var server = null;
-  describe("asynchronized requests", function () {
+  var server_ifx = null;
 
-    server = new Server();
+  describe("asynchronized requests", function () {
+    this.timeout(20000);
+
+    server_ifx = new Server();
 
     it("ping", function (done) {
-      server.ping(function (err, res) {
+      server_ifx.ping(function (err, res) {
         assert.equal(true, res.duration > 0);
         done(err)
       })
@@ -42,7 +43,7 @@ describe("server async tests", function () {
 
 
     it("register datasource", function (done) {
-      server.dataSource(dsn_default, dsSpec_default, function (err, res) {
+      server_ifx.dataSource(dsn_informix, dsSpec_informix, function (err, res) {
         assert.equal(true, res.getId() > 0);
         done(err)
       });
@@ -50,18 +51,18 @@ describe("server async tests", function () {
 
 
     it("get registered datasource", function (done) {
-      server.dataSource(dsn_default, function (err, res) {
+      server_ifx.dataSource(dsn_informix, function (err, res) {
         assert.equal(true, res.getId() > 0);
         done(err)
       });
 
     });
 
-    it("create db", function (done) {
-      var ds = server.dataSource(dsn_default);
+    it("create db tables", function (done) {
+      var ds = server_ifx.dataSource(dsn_informix);
       assert.equal(true, ds.getId() > 0);
 
-      ds.executeBatch(createDBSchema_default, function (err, res) {
+      ds.executeBatch(createDBSchema_informix, function (err, res) {
         assert.equal(null,err);
         assert.equal(2, res.batchResults.length);
         done(err)
@@ -71,15 +72,14 @@ describe("server async tests", function () {
 
 
     it("clear tables db", function (done) {
-      var ds = server.dataSource(dsn_default);
+      var ds = server_ifx.dataSource(dsn_informix);
       assert.equal(true, ds.getId() > 0);
 
       ds.execute('TRUNCATE TABLE car', function (err, res) {
-        assert.equal(1, res.affected);
-
+        assert.equal(0, res.affected);
 
         ds.execute('TRUNCATE TABLE owner', function (err2, res2) {
-          assert.equal(1, res.affected);
+          assert.equal(0, res.affected);
           done(err2)
         });
       });
@@ -88,10 +88,10 @@ describe("server async tests", function () {
     });
 
     it("insert data", function (done) {
-      var ds = server.dataSource(dsn_default);
+      var ds = server_ifx.dataSource(dsn_informix);
       assert.equal(true, ds.getId() > 0);
 
-      ds.executeBatch(insertData_default, function (err, res) {
+      ds.executeBatch(insertData_informix, function (err, res) {
         assert.equal(3, res.batchResults.length);
         done(err);
       });
@@ -100,7 +100,7 @@ describe("server async tests", function () {
 
 
     it("update data", function (done) {
-      var ds = server.dataSource(dsn_default);
+      var ds = server_ifx.dataSource(dsn_informix);
       assert.equal(true, ds.getId() > 0);
 
       ds.update("INSERT INTO car (type, name) VALUES('Volvo', 'V70')", function (err, res) {
@@ -112,7 +112,7 @@ describe("server async tests", function () {
     });
 
     it("query data", function (done) {
-      var ds = server.dataSource(dsn_default);
+      var ds = server_ifx.dataSource(dsn_informix);
       assert.equal(true, ds.getId() > 0);
 
       ds.query("SELECT * FROM car", function (err, res) {
@@ -123,18 +123,18 @@ describe("server async tests", function () {
     });
 
     it("list catalogs", function (done) {
-      var ds = server.dataSource(dsn_default);
+      var ds = server_ifx.dataSource(dsn_informix);
       assert.equal(true, ds.getId() > 0);
 
       ds.listCatalogs(function (err, res) {
-        console.log(res);
+        assert.equal(true,res.length > 0);
         done(err);
       });
 
     });
 
     it("list tables", function (done) {
-      var ds = server.dataSource(dsn_default);
+      var ds = server_ifx.dataSource(dsn_informix);
       assert.equal(true, ds.getId() > 0);
 
       /*
@@ -142,8 +142,8 @@ describe("server async tests", function () {
       done();
       */
 
-      ds.listTables('PUBLIC', function (err, res) {
-        console.log(res);
+      ds.listTables('iot',function (err, res) {
+        assert.equal(true,res.length > 0);
         done(err);
       });
 

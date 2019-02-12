@@ -1,7 +1,7 @@
 var assert = require('assert');
 var Server = require('./../lib/server');
 
-var dsn = 'hsql_test';
+var dsn = 'hsql_test_02';
 var dsSpec = {
   type: 'jdbc',
   driver: 'org.hsqldb.jdbc.JDBCDriver',
