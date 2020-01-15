@@ -127,7 +127,6 @@ describe("server async tests", function () {
       assert.equal(true, ds.getId() > 0);
 
       ds.listCatalogs(function (err, res) {
-        console.log(res);
         done(err);
       });
 
@@ -143,7 +142,6 @@ describe("server async tests", function () {
       */
 
       ds.listTables('PUBLIC', function (err, res) {
-        console.log(res);
         done(err);
       });
 
