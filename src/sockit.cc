@@ -60,7 +60,7 @@ Sockit::~Sockit() {
 }
 
 /*static*/ void
-Sockit::Init(Handle<Object> aExports) {
+Sockit::Init(Local<Object> aExports) {
   Isolate* isolate = Isolate::GetCurrent();
 
   Local<FunctionTemplate> object = FunctionTemplate::New(isolate, New);

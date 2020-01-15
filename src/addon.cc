@@ -8,7 +8,7 @@
 using namespace v8;
 
 // Initialize
-void InitAll(Handle<Object> aExports) {
+void InitAll(Local<Object> aExports) {
   Sockit::Init(aExports);
 }
 
