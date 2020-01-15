@@ -116,7 +116,7 @@ describe("connection async tests", function () {
         type: 'jdbc',
         name: dsn,
         driver: 'org.hsqldb.jdbc.JDBCDriver',
-        driverLocation: "http://central.maven.org/maven2/org/hsqldb/hsqldb/2.3.3/hsqldb-2.3.3.jar",
+        driverLocation: "https://repo1.maven.org/maven2/org/hsqldb/hsqldb/2.5.0/hsqldb-2.5.0.jar",
         url: "jdbc:hsqldb:file:/tmp/testdb/hsql1",
         user: 'SA',
         password: ''
@@ -230,7 +230,7 @@ describe("connection async tests", function () {
         type: 'jdbc',
         name: dsn,
         driver: 'org.hsqldb.jdbc.JDBCDriver',
-        driverLocation: "http://central.maven.org/maven2/org/hsqldb/hsqldb/2.3.3/hsqldb-2.3.3.jar",
+        driverLocation: "https://repo1.maven.org/maven2/org/hsqldb/hsqldb/2.5.0/hsqldb-2.5.0.jar",
         url: "jdbc:hsqldb:file:/tmp/testdb/hsql1",
         user: 'SA',
         password: ''
