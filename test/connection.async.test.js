@@ -169,44 +169,44 @@ describe("connection async tests", function () {
         return _conn.writeAsync(t.toBin());
       })
       .then(function (response) {
-        console.log('request', ds);
-        console.log('header', response.header);
-        console.log('data', response.data);
+        // console.log('request', ds);
+        // console.log('header', response.header);
+        // console.log('data', response.data);
 
         var t = new Actions.Transport('ds.query', dsInitDB);
         return conn.writeAsync(t.toBin());
       })
       .then(function (response) {
-        console.log('request', dsInitDB);
-        console.log('header', response.header);
-        console.log('data', response.data);
+        // console.log('request', dsInitDB);
+        // console.log('header', response.header);
+        // console.log('data', response.data);
 
         var t = new Actions.Transport('ds.query', dsQueryDB);
         return conn.writeAsync(t.toBin());
       })
       .then(function (response) {
-        console.log('request', dsQueryDB);
-        console.log('header', response.header);
-        console.log('data', response.data);
-        console.log('result', response.data.result.data);
+        // console.log('request', dsQueryDB);
+        // console.log('header', response.header);
+        // console.log('data', response.data);
+        // console.log('result', response.data.result.data);
 
         var t = new Actions.Transport('ds.query', dsQueryDB2);
         return conn.writeAsync(t.toBin());
       })
       .then(function (response) {
-        console.log('request', dsQueryDB2);
-        console.log('header', response.header);
-        console.log('data', response.data);
-        console.log('result', response.data.result.data);
+        // console.log('request', dsQueryDB2);
+        // console.log('header', response.header);
+        // console.log('data', response.data);
+        // console.log('result', response.data.result.data);
 
         var t = new Actions.Transport('ds.query', dsQueryDB3);
         return conn.writeAsync(t.toBin());
       })
       .then(function (response) {
-        console.log('request', dsQueryDB2);
-        console.log('header', response.header);
-        console.log('data', response.data);
-        console.log('result', response.data.result.data);
+        // console.log('request', dsQueryDB2);
+        // console.log('header', response.header);
+        // console.log('data', response.data);
+        // console.log('result', response.data.result.data);
 
         return conn.destroy();
       })

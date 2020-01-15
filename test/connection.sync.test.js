@@ -89,39 +89,39 @@ describe("connection sync tests", function () {
     var t = new Actions.Transport('ds', ds);
     var response = conn.write(t.toBin());
 
-    console.log('request', ds);
-    console.log('header', response.header);
-    console.log('data', response.data);
+    // console.log('request', ds);
+    // console.log('header', response.header);
+    // console.log('data', response.data);
 
     t = new Actions.Transport('ds.query', dsInitDB);
     response = conn.write(t.toBin());
 
-    console.log('request', dsInitDB);
-    console.log('header', response.header);
-    console.log('data', response.data);
+    // console.log('request', dsInitDB);
+    // console.log('header', response.header);
+    // console.log('data', response.data);
 
     t = new Actions.Transport('ds.query', dsQueryDB);
     response = conn.write(t.toBin());
 
-    console.log('request', dsQueryDB);
-    console.log('header', response.header);
-    console.log('data', response.data);
-    console.log('result', response.data.result.data);
+    // console.log('request', dsQueryDB);
+    // console.log('header', response.header);
+    // console.log('data', response.data);
+    // console.log('result', response.data.result.data);
 
     t = new Actions.Transport('ds.query', dsQueryDB2);
     response = conn.write(t.toBin());
 
-    console.log('request', dsQueryDB);
-    console.log('header', response.header);
-    console.log('data', response.data);
+    // console.log('request', dsQueryDB);
+    // console.log('header', response.header);
+    // console.log('data', response.data);
 
 
     t = new Actions.Transport('ds.query', dsQueryDB3);
     response = conn.write(t.toBin());
 
-    console.log('request', dsQueryDB);
-    console.log('header', response.header);
-    console.log('data', response.data);
+    // console.log('request', dsQueryDB);
+    // console.log('header', response.header);
+    // console.log('data', response.data);
 
 
     conn.destroy()
