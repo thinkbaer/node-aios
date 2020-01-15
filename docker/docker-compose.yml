@@ -3,7 +3,6 @@ services:
 
   informix:
     image: ibmcom/informix-developer-database:12.10.FC11DE
-    container_name: node_aios_informix
     environment:
       - LICENSE=accept
     privileged: true
@@ -14,8 +13,7 @@ services:
     shm_size: 1gb
 
   aios:
-    image: thinkbaer/aios:0.3.0
-    container_name: node_aios
+    image: thinkbaer/aios:0.4.0
     ports:
       - 127.0.0.1:8118:8118
     links:
