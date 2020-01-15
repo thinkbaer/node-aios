@@ -27,7 +27,7 @@
     "datasources"
   ],
   "dependencies": {
-    "bson": "^4.0.3",
+    "bson": "^3.0.2",
     "lodash": "^4.17.15"
   },
   "devDependencies": {
