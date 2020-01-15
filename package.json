@@ -27,13 +27,13 @@
     "datasources"
   ],
   "dependencies": {
-    "bson": "^3.0.2",
-    "lodash": "^4.17.11"
+    "bson": "^4.0.3",
+    "lodash": "^4.17.15"
   },
   "devDependencies": {
-    "mocha": "^5.2.0",
-    "nan": "^2.12.1",
+    "mocha": "^7.0.0",
+    "nan": "^2.14.0",
     "node-cmake": "^2.5.1",
-    "node-gyp": "^3.8.0"
+    "node-gyp": "^6.1.0"
   }
 }
