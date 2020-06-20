@@ -4,6 +4,7 @@
 ```
  npm install --save-dev node-cmake
  ncmake update
+ ncmake --target v14.4.0 rebuild
 ```
 
 
