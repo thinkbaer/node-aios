@@ -19,7 +19,7 @@ include(NodeJS.cmake)
 nodejs_init()
 
 # message(WARNING ${CMAKE_JS_LIB})
-target_include_directories(${PROJECT_NAME} PUBLIC cmake-build-debug/node/v10.15.2/include)
+target_include_directories(${PROJECT_NAME} PUBLIC cmake-build-debug/node/v10.19.0/include)
 target_include_directories(${PROJECT_NAME} PUBLIC node_modules/nan)
 # add_library(node  ${NODEJS_LIBRARIES})
 

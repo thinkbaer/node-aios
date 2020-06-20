@@ -17,6 +17,7 @@ node_js:
   - 11
   - 12
   - 13
+  - 14
 
 before_install:
   - npm install -g nyc
