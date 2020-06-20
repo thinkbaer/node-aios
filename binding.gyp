@@ -4,8 +4,7 @@
   },
   'targets': [{
     'target_name': 'sockit',
-    'sources': ['src/addon.c',
-                'src/sockit.cc'],
+    'sources': ['src/addon.c', 'src/sockit.cc'],
     'conditions': [[
       '"<@(gpp)"=="no"',
       { 'sources!': ['src/addon.c',
