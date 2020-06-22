@@ -1,10 +1,9 @@
-const util = require('util');
-var Connection = require('./connection')
-  , Actions = require('./actions')
-  , DataSource = require('./datasource')
-  , _ = require("lodash");
+import * as _ from 'lodash';
+import {Connection} from './connection';
+import * as Actions from './actions';
+import {DataSource} from './datasource';
 
-var Server = function (options) {
+export function Server(options: any) {
   options = options || {};
 
   this.options = options;
@@ -12,53 +11,55 @@ var Server = function (options) {
   this.options.port = options.port || 8118;
 
   // Internals
-  this.dataSources = {}
+  this.dataSources = {};
 
 };
 
-Server.prototype.command = function (ns, data, fn) {
+Server.prototype.command = function (ns: any, data: any, fn: any) {
   var isSync = true;
-  if (fn && util.isFunction(fn)) {
-    isSync = false
+  if (fn && _.isFunction(fn)) {
+    isSync = false;
   }
 
   if (isSync) {
-    return this._cmdSync(ns, data)
+    return this._cmdSync(ns, data);
   } else {
-    this._cmdAsync(ns, data, fn)
+    this._cmdAsync(ns, data, fn);
   }
 };
 
 
-Server.prototype._cmdAsync = function (ns, data, fn) {
+Server.prototype._cmdAsync = function (ns: any, data: any, fn: any) {
   var opts = {};
+  // @ts-ignore
   var t = new Actions.Transport(ns, data);
 
   var connection = this.connection(opts);
-  connection.connect(function (err, conn) {
+  connection.connect(function (err: any, conn: any) {
     if (!err) {
-      conn.write(t.toBin(), function (err, res) {
+      conn.write(t.toBin(), function (err: any, res: any) {
         connection.destroy(function () {
           if (res.data.errors) {
-            fn(new Error(JSON.stringify(res.data)))
+            fn(new Error(JSON.stringify(res.data)));
           } else if (err) {
-            fn(err)
+            fn(err);
           } else {
-            fn(null, res.data)
+            fn(null, res.data);
           }
         });
-      })
+      });
     } else {
       connection.destroy(function () {
-        fn(err)
+        fn(err);
       });
     }
-  })
+  });
 
 };
 
-Server.prototype._cmdSync = function (ns, data) {
+Server.prototype._cmdSync = function (ns: any, data: any) {
   var opts = {};
+  // @ts-ignore
   var t = new Actions.Transport(ns, data);
 
   // currently only synced!
@@ -76,47 +77,50 @@ Server.prototype._cmdSync = function (ns, data) {
 
   if (response.data.errors) {
     console.log(response.data);
-    throw new Error(response.data.errors)
+    throw new Error(response.data.errors);
   }
   return response.data;
 };
 
-Server.prototype.connection = function (options) {
+Server.prototype.connection = function (options: any) {
   var _options = _.clone(this.options);
   if (options) {
-    _options = _.merge(_options, options)
+    _options = _.merge(_options, options);
   }
+  // @ts-ignore
   var connection = new Connection(_options);
   return connection;
 };
 
-Server.prototype.ping = function (fn) {
+Server.prototype.ping = function (fn: any) {
   return this.command('sys.ping', {time: new Date()}, fn);
 };
 
-Server.prototype.hasDataSource = function (name) {
-  return name in this.dataSources
+Server.prototype.hasDataSource = function (name: any) {
+  return name in this.dataSources;
 };
 
-Server.prototype.dataSource = function (name, options, fn) {
+Server.prototype.dataSource = function (name: any, options: any, fn: any) {
 
   var async = false;
-  if (fn && util.isFunction(fn)) {
-    async = true
+  if (fn && _.isFunction(fn)) {
+    async = true;
   }
 
-  if (options && util.isFunction(options)) {
+  if (options && _.isFunction(options)) {
     async = true;
     fn = options;
-    options = null
+    options = null;
   }
 
-  if (!name) throw new Error('name must be set');
+  if (!name) {
+    throw new Error('name must be set');
+  }
 
   if (this.hasDataSource(name)) {
 
     if (async) {
-      return fn(null, this.dataSources[name])
+      return fn(null, this.dataSources[name]);
     } else {
       return this.dataSources[name];
     }
@@ -128,11 +132,11 @@ Server.prototype.dataSource = function (name, options, fn) {
   // is not registered
   if (options) {
     if (!options.type) {
-      throw new Error('datasource not present, type must be specified')
+      throw new Error('datasource not present, type must be specified');
     }
     var dsClass = DataSource.get(options.type);
     if (!dsClass) {
-      throw new Error('no class found for ' + options.type)
+      throw new Error('no class found for ' + options.type);
     }
 
     options['name'] = name;
@@ -140,50 +144,48 @@ Server.prototype.dataSource = function (name, options, fn) {
 
     if (async) {
       // async
-      this.dataSources[name].register(fn)
+      this.dataSources[name].register(fn);
     } else {
       // sync
       return this.dataSources[name].register();
     }
   } else {
-    throw new Error('datasource not present, options must be set')
+    throw new Error('datasource not present, options must be set');
   }
 };
 
 Server.prototype.pingAsync = function () {
   return new Promise((resolve, reject) => {
-    this.ping((err, res) => {
+    this.ping((err: any, res: any) => {
       if (err) {
         reject(err);
       } else {
         resolve(res);
       }
-    })
-  })
+    });
+  });
 };
 
 
-Server.prototype.commandAsync = function (ns, data) {
+Server.prototype.commandAsync = function (ns: any, data: any) {
   return new Promise((resolve, reject) => {
-    this.command(ns, data, (err, res) => {
+    this.command(ns, data, (err: any, res: any) => {
       if (err) {
         reject(err);
       } else {
         resolve(res);
       }
-    })
-  })
+    });
+  });
 };
-Server.prototype.dataSourceAsync = function (name, options) {
+Server.prototype.dataSourceAsync = function (name: any, options: any) {
   return new Promise((resolve, reject) => {
-    this.dataSource(name, options, (err, res) => {
+    this.dataSource(name, options, (err: any, res: any) => {
       if (err) {
         reject(err);
       } else {
         resolve(res);
       }
-    })
-  })
+    });
+  });
 };
-
-module.exports = Server;

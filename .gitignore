@@ -4,6 +4,7 @@ shadow_settings.properties
 *.shadow.js
 *.log
 .idea
+.nyc_output
 .npmignore
 build/
 cmake-build-debug/

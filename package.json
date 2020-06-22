@@ -1,10 +1,11 @@
 {
   "name": "aios",
-  "version": "0.3.0",
+  "version": "1.0.0",
   "description": "Socket client for Aios server",
-  "main": "lib/server.js",
+  "main": "server.js",
   "scripts": {
-    "test": "mocha test/*.test.js"
+    "test": "nyc mocha --opts test/mocha.all.opts",
+    "posttest": "codecov -f coverage/*.json"
   },
   "author": {
     "name": "Robert Kania"
@@ -25,11 +26,31 @@
     "database",
     "datasources"
   ],
+  "private": true,
   "dependencies": {
-    "bson": "^4.0.4",
+    "bson": "^3.0.2",
     "lodash": "^4.17.15"
   },
   "devDependencies": {
-    "mocha": "^7.0.0"
+    "@allgemein/packaging": "^1.1.0",
+    "@types/bson": "^4.0.2",
+    "@types/lodash": "^4.14.156",
+    "codecov": "^3.7.0",
+    "codelyzer": "^5.2.0",
+    "del": "^5.1.0",
+    "gulp": "^4.0.2",
+    "gulp-bump": "^3.1.3",
+    "gulp-clean": "^0.4.0",
+    "gulp-replace": "^1.0.0",
+    "gulp-shell": "^0.7.1",
+    "gulp-sourcemaps": "^2.6.5",
+    "gulp-typescript": "^5.0.1",
+    "merge-stream": "^2.0.0",
+    "mocha": "^7.0.0",
+    "mocha-typescript": "^1.1.17",
+    "nyc": "^15.1.0",
+    "ts-node": "^8.10.2",
+    "tslint": "^6.1.2",
+    "typescript": "3.5.3"
   }
 }

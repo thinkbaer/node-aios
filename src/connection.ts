@@ -1,22 +1,25 @@
-const util = require('util');
-var inherits = util.inherits
-  , f = util.format
-  , actions = require('./actions')
-  , EventEmitter = require('events').EventEmitter
-// TODO load on demand!
-  , net = require('net')
-
+import {format as f, inherits} from 'util';
+import * as net from 'net';
+import {EventEmitter} from 'events';
+import {Utils} from './utils';
+import * as _ from 'lodash';
+import * as actions from './actions';
 
 /**
  * Implements Socket Connection to Aios Server
  */
 
 
-var _id = 0;
+let _id = 0;
 
-var Response = actions.Response;
+// @ts-ignore
+let Response = actions.Response;
 
-function Connection(options) {
+export function Connection(options: {
+  debug?: any;
+  messageHandler?: any; maxBsonMessageSize?: any;
+  port?: any; host?: any; keepAlive?: any; keepAliveInitialDelay?: any; noDelay?: any; connectionTimeout?: any; socketTimeout?: any;
+}) {
 
   options = options || {};
 
@@ -53,8 +56,8 @@ function Connection(options) {
 }
 
 
-var defaultMessageHandler = function (buffer) {
-  var response = new Response(buffer);
+let defaultMessageHandler = function (buffer: any) {
+  let response = new Response(buffer);
   response.parse();
   return response;
 };
@@ -62,52 +65,52 @@ var defaultMessageHandler = function (buffer) {
 
 //
 // Connection handlers
-var errorHandler = function (sock) {
-  return function (err) {
+let errorHandler = function (sock: { getConnection: () => any; handleError: (arg0: any) => void; }) {
+  return function (err: any) {
     // Debug information
-    var conn = sock.getConnection();
+    let conn = sock.getConnection();
     if (conn.debug) {
       console.trace(f('connection %s for [%s:%s] errored out with [%s]', conn.id, conn.host, conn.port, JSON.stringify(err)));
     }
     // Emit the error
     sock.handleError(err);
 
-  }
+  };
 };
 
-var timeoutHandler = function (self) {
+let timeoutHandler = function (self: { getConnection: () => any; handleTimeout: () => void; }) {
   return function () {
     // Debug information
-    var conn = self.getConnection();
+    let conn = self.getConnection();
     if (conn.debug) {
       console.trace(f('connection %s for [%s:%s] timed out', conn.id, conn.host, conn.port));
     }
     // Emit timeout error
-    self.handleTimeout()
-  }
+    self.handleTimeout();
+  };
 };
 
-var closeHandler = function (self) {
-  return function (hadError) {
+let closeHandler = function (self: { getConnection: () => any; handleClose: (arg0: any) => void; }) {
+  return function (hadError: any) {
     // Debug information
-    var conn = self.getConnection();
+    let conn = self.getConnection();
     if (conn.debug) {
       console.trace(f('connection %s with for [%s:%s] closed', conn.id, conn.host, conn.port));
     }
     // Emit close event
-    self.handleClose(hadError)
-  }
+    self.handleClose(hadError);
+  };
 };
 
-var dataHandler = function (self) {
-  return function (data) {
-    var maxBsonMessageSize = self.wrapper.maxBsonMessageSize;
+let dataHandler = function (self: any) {
+  return function (data: any) {
+    let maxBsonMessageSize = self.wrapper.maxBsonMessageSize;
     // Parse until we are done with the data
     while (data.length > 0) {
       // If we still have bytes to read on the current message
       if (self.bytesRead > 0 && self.sizeOfMessage > 0) {
         // Calculate the amount of remaining bytes
-        var remainingBytesToRead = self.sizeOfMessage - self.bytesRead;
+        let remainingBytesToRead = self.sizeOfMessage - self.bytesRead;
         // Check if the current chunk contains the rest of the message
         if (remainingBytesToRead > data.length) {
           // Copy the new data into the exiting buffer (should have been allocated when we know the message size)
@@ -125,7 +128,7 @@ var dataHandler = function (self) {
 
           // Emit current complete message
           try {
-            var emitBuffer = self.buffer;
+            let emitBuffer = self.buffer;
             // Reset state of buffer
             self.buffer = null;
             self.sizeOfMessage = 0;
@@ -136,8 +139,8 @@ var dataHandler = function (self) {
             self.handleData(emitBuffer);
 
           } catch (err) {
-            var errorObject = {
-              err: "socketHandler",
+            let errorObject = {
+              err: 'socketHandler',
               trace: err,
               bin: self.buffer,
               parseState: {
@@ -157,7 +160,7 @@ var dataHandler = function (self) {
           // If we have enough bytes to determine the message size let's do it
           if (self.stubBuffer.length + data.length > 4) {
             // Prepad the data
-            var newData = new Buffer(self.stubBuffer.length + data.length);
+            let newData = new Buffer(self.stubBuffer.length + data.length);
             self.stubBuffer.copy(newData, 0);
             data.copy(newData, self.stubBuffer.length);
             // Reassign for parsing
@@ -172,7 +175,7 @@ var dataHandler = function (self) {
           } else {
 
             // Add the the bytes to the stub buffer
-            var newStubBuffer = new Buffer(self.stubBuffer.length + data.length);
+            let newStubBuffer = new Buffer(self.stubBuffer.length + data.length);
             // Copy existing stub buffer
             self.stubBuffer.copy(newStubBuffer, 0);
             // Copy missing part of the data
@@ -184,15 +187,15 @@ var dataHandler = function (self) {
           if (data.length > 8) {
             // Retrieve the message size
             // var totalLength = data.readUInt32LE(0);
-            //var totalLength = data[0] | data[1] << 8 | data[2] << 16 | data[3] << 24;
-            //var totalLength = data[0]  | data[1] << 8 | data[2] << 16 | data[3] << 24;
-            var totalLength = Utils.encodeTotalLength(data);
+            // var totalLength = data[0] | data[1] << 8 | data[2] << 16 | data[3] << 24;
+            // var totalLength = data[0]  | data[1] << 8 | data[2] << 16 | data[3] << 24;
+            let totalLength = Utils.encodeTotalLength(data);
 
-            var sizeOfMessage = totalLength + 8;
+            let sizeOfMessage = totalLength + 8;
             // If we have a negative totalLength emit error and return
             if (sizeOfMessage < 0 || sizeOfMessage > maxBsonMessageSize) {
-              var errorObject = {
-                err: "socketHandler",
+              let errorObject = {
+                err: 'socketHandler',
                 trace: '',
                 bin: self.buffer,
                 parseState: {
@@ -223,7 +226,7 @@ var dataHandler = function (self) {
 
             } else if (sizeOfMessage > 8 && sizeOfMessage < maxBsonMessageSize && sizeOfMessage == data.length) {
               try {
-                var emitBuffer = data;
+                let emitBuffer = data;
                 // Reset state of buffer
                 self.buffer = null;
                 self.sizeOfMessage = 0;
@@ -235,8 +238,8 @@ var dataHandler = function (self) {
                 self.handleData(emitBuffer);
 
               } catch (err) {
-                var errorObject = {
-                  err: "socketHandler",
+                let errorObject = {
+                  err: 'socketHandler',
                   trace: err,
                   bin: self.buffer,
                   parseState: {
@@ -249,8 +252,8 @@ var dataHandler = function (self) {
                 self.handleParseError(errorObject);
               }
             } else if (sizeOfMessage <= 8 || sizeOfMessage > maxBsonMessageSize) {
-              var errorObject = {
-                err: "socketHandler",
+              let errorObject: any = {
+                err: 'socketHandler',
                 trace: null,
                 bin: data,
                 parseState: {
@@ -269,7 +272,7 @@ var dataHandler = function (self) {
               // Exit parsing loop
               data = new Buffer(0);
             } else {
-              var emitBuffer = data.slice(0, sizeOfMessage);
+              let emitBuffer = data.slice(0, sizeOfMessage);
               // Reset state of buffer
               self.buffer = null;
               self.bytesRead = 0;
@@ -290,19 +293,16 @@ var dataHandler = function (self) {
         }
       }
     }
-  }
+  };
 };
-
-
-
 
 
 /**
  *
- * @param [Connection] connection
  * @constructor
+ * @param connection
  */
-var AsyncSock = function (connection) {
+let AsyncSock = function (connection: any) {
   this.wrapper = connection;
   this.connection = null;
 
@@ -310,7 +310,7 @@ var AsyncSock = function (connection) {
   // Add event listener
   EventEmitter.call(this);
 
-  var self = this;
+  let self = this;
 
 
   // Create new connection instance
@@ -339,28 +339,28 @@ var AsyncSock = function (connection) {
   self.connection.on('data', dataHandler(self));
 
   // copy previous registered callbacks
-  var eventTypes = Object.keys(self.wrapper.callbacks);
+  let eventTypes = Object.keys(self.wrapper.callbacks);
   eventTypes.forEach(function (key) {
-    self.wrapper.callbacks[key].forEach(function (fn) {
+    self.wrapper.callbacks[key].forEach(function (fn: any) {
       self.on(key, fn);
-    })
+    });
   });
-  self.wrapper.callbacks = {}
+  self.wrapper.callbacks = {};
 };
 
 inherits(AsyncSock, EventEmitter);
 
 AsyncSock.prototype.emit = function () {
-  var args = Array.prototype.slice.call(arguments);
-  var type = args.shift();
+  let args = Array.prototype.slice.call(arguments);
+  let type = args.shift();
 
-  if (args.length > 0 && util.isError(args[0])) {
-    args.unshift(type)
+  if (args.length > 0 && _.isError(args[0])) {
+    args.unshift(type);
   } else {
-    args.unshift(type, undefined)
+    args.unshift(type, undefined);
   }
 
-  EventEmitter.prototype.emit.apply(this, args)
+  EventEmitter.prototype.emit.apply(this, args);
 };
 
 /* ======================================
@@ -372,7 +372,9 @@ AsyncSock.prototype.emit = function () {
  * @returns {net.Socket}
  */
 AsyncSock.prototype.getSock = function () {
-  if (this.connection) return this.connection;
+  if (this.connection) {
+    return this.connection;
+  }
   return null;
 };
 
@@ -391,15 +393,14 @@ AsyncSock.prototype.getConnection = function () {
  */
 
 
-
-AsyncSock.prototype.destroy = function (fn) {
+AsyncSock.prototype.destroy = function (fn: any) {
   if (fn) {
-    this.once('close', fn)
+    this.once('close', fn);
   }
 
   if (this.connection) {
     this.connection.end();
-    //return this.connection.destroy();
+    // return this.connection.destroy();
   }
 
 };
@@ -409,12 +410,11 @@ AsyncSock.prototype.destroy = function (fn) {
  */
 
 
-
-AsyncSock.prototype.write = function (buffer, fn) {
-  var self = this;
+AsyncSock.prototype.write = function (buffer: any, fn: any) {
+  let self = this;
 
   if (fn) {
-    self.once('data', fn)
+    self.once('data', fn);
   }
 
   // Write out the command
@@ -423,7 +423,7 @@ AsyncSock.prototype.write = function (buffer, fn) {
     return this.connection.write(buffer, 'binary');
   }
   // Iterate over all buffers and write them in order to the socket
-  for (var i = 0; i < buffer.length; i++) {
+  for (let i = 0; i < buffer.length; i++) {
     this.connection.write(buffer[i], 'binary');
   }
 };
@@ -431,7 +431,6 @@ AsyncSock.prototype.write = function (buffer, fn) {
 /* ======================================
  *           Sock isConnected
  */
-
 
 
 AsyncSock.prototype.isConnected = function () {
@@ -444,10 +443,10 @@ AsyncSock.prototype.isConnected = function () {
  *           Sock handleError
  */
 
-AsyncSock.prototype.handleError = function (err) {
-  var self = this;
+AsyncSock.prototype.handleError = function (err: any) {
+  let self = this;
   if (self.listeners('error').length > 0) {
-    self.emit("error", err);
+    self.emit('error', err);
   }
 };
 
@@ -456,10 +455,10 @@ AsyncSock.prototype.handleError = function (err) {
  */
 
 AsyncSock.prototype.handleTimeout = function () {
-  var self = this;
-  var conn = self.getConnection();
-  self.emit("timeout"
-    , f("connection %s to %s:%s timed out", conn.id, conn.host, conn.port)
+  let self = this;
+  let conn = self.getConnection();
+  self.emit('timeout'
+    , f('connection %s to %s:%s timed out', conn.id, conn.host, conn.port)
   );
 
 };
@@ -468,12 +467,12 @@ AsyncSock.prototype.handleTimeout = function () {
  *           Sock handleClose
  */
 
-AsyncSock.prototype.handleClose = function (hadError) {
-  var self = this;
+AsyncSock.prototype.handleClose = function (hadError: any) {
+  let self = this;
   // var conn = self.getConnection()
   if (!hadError) {
     self.connection = null;
-    self.emit("close");
+    self.emit('close');
   } else {
     // ???
   }
@@ -483,19 +482,19 @@ AsyncSock.prototype.handleClose = function (hadError) {
  *           Sock handleData
  */
 
-AsyncSock.prototype.handleData = function (buffer) {
-  var self = this;
-  var response = self.getConnection().messageHandler(buffer, self);
-  self.emit("data", response);
+AsyncSock.prototype.handleData = function (buffer: any) {
+  let self = this;
+  let response = self.getConnection().messageHandler(buffer, self);
+  self.emit('data', response);
 };
 
 /* ======================================
  *           Sock handleData
  */
 
-AsyncSock.prototype.handleParseError = function (errorObject) {
-  var self = this;
-  return self.emit("parseError", errorObject);
+AsyncSock.prototype.handleParseError = function (errorObject: any) {
+  let self = this;
+  return self.emit('parseError', errorObject);
 };
 
 /* ======================================
@@ -512,8 +511,8 @@ AsyncSock.prototype.handleConnect = function () {
 Connection.prototype.connect = function () {
   this.state = 'connect';
 
-  var args = Array.prototype.slice.call(arguments);
-  var _options = null;
+  let args = Array.prototype.slice.call(arguments);
+  let _options = null;
 
   if (args.length > 0) {
     if (args.length == 1) {
@@ -527,22 +526,23 @@ Connection.prototype.connect = function () {
     }
   } else {
     if ('connect' in this.callbacks && this.callbacks['connect'].length > 0) {
-      _options = {sync: false}
+      _options = {sync: false};
     } else {
-      _options = {sync: true}
+      _options = {sync: true};
     }
   }
 
 
-  var self = this;
+  let self = this;
   _options = _options || {sync: false};
   // Check if we are overriding the promoteLongs
   if (typeof _options.promoteLongs == 'boolean') {
     self.responseOptions.promoteLongs = _options.promoteLongs;
   }
 
-  self.isSync = _options.sync ? _options.sync : false;
-  self.connection = self.isSync ? new SyncSock(self) : new AsyncSock(self);
+  self.isSync = false;
+  // @ts-ignore
+  self.connection = new AsyncSock(self);
 
   return this;
 };
@@ -552,9 +552,9 @@ Connection.prototype.connect = function () {
  * Cache callbacks
  * @param eventType
  */
-Connection.prototype.on = function (eventType, callback) {
+Connection.prototype.on = function (eventType: any, callback: any) {
   if (this.connection) {
-    this.connection.on(eventType, callback)
+    this.connection.on(eventType, callback);
   } else {
     this.callbacks[eventType] = this.callbacks[eventType] || [];
     this.callbacks[eventType].push(callback);
@@ -567,8 +567,10 @@ Connection.prototype.on = function (eventType, callback) {
  * Destroy connection
  * @method
  */
-Connection.prototype.destroy = function (fn) {
-  if (this.connection) return this.connection.destroy(fn);
+Connection.prototype.destroy = function (fn: any) {
+  if (this.connection) {
+    return this.connection.destroy(fn);
+  }
 };
 
 /**
@@ -576,7 +578,7 @@ Connection.prototype.destroy = function (fn) {
  * @method
  * @param {Command} command Command to write out need to implement toBin and toBinUnified
  */
-Connection.prototype.write = function (buffer, fn) {
+Connection.prototype.write = function (buffer: any, fn: any) {
   return this.connection.write(buffer, fn);
 };
 
@@ -587,7 +589,7 @@ Connection.prototype.write = function (buffer, fn) {
  * @return {string}
  */
 Connection.prototype.toString = function () {
-  return "" + this.id;
+  return '' + this.id;
 };
 
 /**
@@ -605,51 +607,41 @@ Connection.prototype.toJSON = function () {
  * @return {boolean}
  */
 Connection.prototype.isConnected = function () {
-  return !this.connection.isConnected()
-};
-
-
-var Utils = function () {
-};
-
-Utils.encodeTotalLength = function (data) {
-  return data[3] | data[2] << 8 | data[1] << 16 | data[0] << 24;
+  return !this.connection.isConnected();
 };
 
 
 Connection.prototype.destroyAsync = function () {
   return new Promise((resolve, reject) => {
-    this.destroy((err, res) => {
+    this.destroy((err: any, res: unknown) => {
       if (err) {
         reject(err);
       } else {
         resolve(res);
       }
-    })
-  })
+    });
+  });
 };
 Connection.prototype.connectAsync = function () {
   return new Promise((resolve, reject) => {
-    this.connect((err, res) => {
+    this.connect((err: any, res: unknown) => {
       if (err) {
         reject(err);
       } else {
         resolve(res);
       }
-    })
-  })
+    });
+  });
 };
 
-Connection.prototype.writeAsync = function (buffer) {
+Connection.prototype.writeAsync = function (buffer: any) {
   return new Promise((resolve, reject) => {
-    this.write(buffer, (err, res) => {
+    this.write(buffer, (err: any, res: unknown) => {
       if (err) {
         reject(err);
       } else {
         resolve(res);
       }
-    })
-  })
+    });
+  });
 };
-
-module.exports = Connection;

@@ -1,0 +1,38 @@
+{
+  "compilerOptions": {
+    "lib": [
+      "es5",
+      "es6",
+      "dom"
+    ],
+    "outDir": "./build/compiled",
+    "target": "es6",
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "rootDir": ".",
+    "sourceMap": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "preserveConstEnums": true,
+    "pretty": true,
+    "declaration": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": true,
+    "stripInternal": true,
+    "noImplicitAny": true,
+    "suppressImplicitAnyIndexErrors": true,
+    "typeRoots": [
+      "./node_modules/@types"
+    ]
+  },
+  "exclude": [
+    "**/files/*.ts",
+    "archive",
+    "build",
+    "dist",
+    "node_modules",
+    "*/node_modules",
+    "tmp"
+  ],
+  "compileOnSave": true
+}
