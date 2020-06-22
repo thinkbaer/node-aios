@@ -9,7 +9,7 @@ describe('connection async tests', function () {
 
   it('connect async to server with before declared connect event', function (done) {
     // @ts-ignore
-    let conn = new Connection();
+    const conn = new Connection();
     conn.on('connect', function (err: any, _conn: any) {
       _conn.destroy();
       done(err);
@@ -19,7 +19,7 @@ describe('connection async tests', function () {
 
   it('connect async to server with direct callback bind', function (done) {
     // @ts-ignore
-    let conn = new Connection();
+    const conn = new Connection();
     conn.connect(function (err: any, _conn: any) {
       _conn.destroy();
       done(err);
@@ -28,7 +28,7 @@ describe('connection async tests', function () {
 
   it('connect async with promise bind', function (done) {
     // @ts-ignore
-    let conn = new Connection();
+    const conn = new Connection();
     conn.connectAsync().then(function (c: any) {
       c.destroy();
       done();
@@ -41,14 +41,14 @@ describe('connection async tests', function () {
 
   it('send async ping message over emitter', function (done) {
     // @ts-ignore
-    let conn = new Connection();
+    const conn = new Connection();
 
     // Add event listeners
     conn.on('connect', function (err: any, _conn: any) {
-      let date = new Date();
-      let obj = {time: date};
+      const date = new Date();
+      const obj = {time: date};
       // @ts-ignore
-      let t = new Actions.Transport('sys.ping', obj);
+      const t = new Actions.Transport('sys.ping', obj);
       _conn.write(t.toBin());
     });
 
@@ -66,15 +66,15 @@ describe('connection async tests', function () {
 
   it('send async ping message over callback', function (done) {
     // @ts-ignore
-    let conn = new Connection();
+    const conn = new Connection();
 
     // Add event listeners
     conn.connect(function (err: any, _conn: any) {
-      let date = new Date();
-      let obj = {time: date};
+      const date = new Date();
+      const obj = {time: date};
 
       // @ts-ignore
-      let t = new Actions.Transport('sys.ping', obj);
+      const t = new Actions.Transport('sys.ping', obj);
       _conn.write(t.toBin(), function (err: any, response: any) {
         // console.log('ping', response.header, response.data);
         _conn.destroy();
@@ -89,15 +89,15 @@ describe('connection async tests', function () {
 
   it('send async ping message over promise', function (done) {
     // @ts-ignore
-    let conn = new Connection({debug: true});
+    const conn = new Connection({debug: true});
 
     // Add event listeners
     conn.connectAsync().then(function (_conn: any) {
-      let date = new Date();
-      let obj = {time: date};
+      const date = new Date();
+      const obj = {time: date};
 
       // @ts-ignore
-      let t = new Actions.Transport('sys.ping', obj);
+      const t = new Actions.Transport('sys.ping', obj);
       return _conn.writeAsync(t.toBin());
     }).then(function (response: any) {
       // console.log('ping', response.header, response.data);
@@ -117,8 +117,8 @@ describe('connection async tests', function () {
   it('asynchronized create db and query it', function (done) {
     this.timeout(10000);
 
-    let dsn = 'hsql_test_03';
-    let ds = {
+    const dsn = 'hsql_test_03';
+    const ds = {
       method: 'register',
       spec: {
         type: 'jdbc',
@@ -131,7 +131,7 @@ describe('connection async tests', function () {
       }
     };
 
-    let dsInitDB = {
+    const dsInitDB = {
       dsn: dsn,
       query: {
         '@t': 'jdbc.q.batch',
@@ -145,7 +145,7 @@ describe('connection async tests', function () {
       }
     };
 
-    let dsQueryDB = {
+    const dsQueryDB = {
       dsn: dsn,
       query: {
         '@t': 'jdbc.q.select',
@@ -154,7 +154,7 @@ describe('connection async tests', function () {
     };
 
 
-    let dsQueryDB2 = {
+    const dsQueryDB2 = {
       dsn: dsn,
       query: {
         '@t': 'jdbc.q.update',
@@ -162,7 +162,7 @@ describe('connection async tests', function () {
       }
     };
 
-    let dsQueryDB3 = {
+    const dsQueryDB3 = {
       dsn: dsn,
       query: {
         '@t': 'jdbc.q.exec',
@@ -171,11 +171,11 @@ describe('connection async tests', function () {
     };
 
     // @ts-ignore
-    let conn = new Connection();
+    const conn = new Connection();
     conn.connectAsync()
       .then(function (_conn: any) {
         // @ts-ignore
-        let t = new Actions.Transport('ds', ds);
+        const t = new Actions.Transport('ds', ds);
         return _conn.writeAsync(t.toBin());
       })
       .then(function (response: any) {
@@ -184,7 +184,7 @@ describe('connection async tests', function () {
         // console.log('data', response.data);
 
         // @ts-ignore
-        let t = new Actions.Transport('ds.query', dsInitDB);
+        const t = new Actions.Transport('ds.query', dsInitDB);
         return conn.writeAsync(t.toBin());
       })
       .then(function (response: any) {
@@ -193,7 +193,7 @@ describe('connection async tests', function () {
         // console.log('data', response.data);
 
         // @ts-ignore
-        let t = new Actions.Transport('ds.query', dsQueryDB);
+        const t = new Actions.Transport('ds.query', dsQueryDB);
         return conn.writeAsync(t.toBin());
       })
       .then(function (response: any) {
@@ -203,7 +203,7 @@ describe('connection async tests', function () {
         // console.log('result', response.data.result.data);
 
         // @ts-ignore
-        let t = new Actions.Transport('ds.query', dsQueryDB2);
+        const t = new Actions.Transport('ds.query', dsQueryDB2);
         return conn.writeAsync(t.toBin());
       })
       .then(function (response: any) {
@@ -213,7 +213,7 @@ describe('connection async tests', function () {
         // console.log('result', response.data.result.data);
 
         // @ts-ignore
-        let t = new Actions.Transport('ds.query', dsQueryDB3);
+        const t = new Actions.Transport('ds.query', dsQueryDB3);
         return conn.writeAsync(t.toBin());
       })
       .then(function (response: any) {
@@ -237,8 +237,8 @@ describe('connection async tests', function () {
   it('asynchronized list tables', function (done) {
     this.timeout(10000);
 
-    let dsn = 'hsql_test_03';
-    let ds = {
+    const dsn = 'hsql_test_03';
+    const ds = {
       method: 'register',
       spec: {
         type: 'jdbc',
@@ -251,7 +251,7 @@ describe('connection async tests', function () {
       }
     };
 
-    let dsInitDB = {
+    const dsInitDB = {
       dsn: dsn,
       query: {
         '@t': 'jdbc.q.batch',
@@ -265,7 +265,7 @@ describe('connection async tests', function () {
       }
     };
 
-    let dsQueryDB = {
+    const dsQueryDB = {
       dsn: dsn,
       query: {
         '@t': 'jdbc.q.table',
@@ -275,21 +275,21 @@ describe('connection async tests', function () {
 
 
     // @ts-ignore
-    let conn = new Connection();
+    const conn = new Connection();
     conn.connectAsync()
       .then(function (_conn: any) {
         // @ts-ignore
-        let t = new Actions.Transport('ds', ds);
+        const t = new Actions.Transport('ds', ds);
         return _conn.writeAsync(t.toBin());
       })
       .then(function (response: any) {
         // @ts-ignore
-        let t = new Actions.Transport('ds.query', dsInitDB);
+        const t = new Actions.Transport('ds.query', dsInitDB);
         return conn.writeAsync(t.toBin());
       })
       .then(function (response: any) {
         // @ts-ignore
-        let t = new Actions.Transport('ds.query', dsQueryDB);
+        const t = new Actions.Transport('ds.query', dsQueryDB);
         return conn.writeAsync(t.toBin());
       })
       .then(function (response: any) {

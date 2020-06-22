@@ -13,7 +13,7 @@ import * as actions from './actions';
 let _id = 0;
 
 // @ts-ignore
-let Response = actions.Response;
+const Response = actions.Response;
 
 export function Connection(options: {
   debug?: any;
@@ -40,14 +40,14 @@ export function Connection(options: {
   // Default options
   this.port = options.port || 8118;
   this.host = options.host || 'localhost';
-  this.keepAlive = typeof options.keepAlive == 'boolean' ? options.keepAlive : true;
+  this.keepAlive = typeof options.keepAlive === 'boolean' ? options.keepAlive : true;
   this.keepAliveInitialDelay = options.keepAliveInitialDelay || 0;
-  this.noDelay = typeof options.noDelay == 'boolean' ? options.noDelay : true;
+  this.noDelay = typeof options.noDelay === 'boolean' ? options.noDelay : true;
   this.connectionTimeout = options.connectionTimeout || 60000;
   this.socketTimeout = options.socketTimeout || 60000;
 
   // Check if we have a domain socket
-  this.domainSocket = this.host.indexOf('\/') != -1;
+  this.domainSocket = this.host.indexOf('\/') !== -1;
 
   // Internal state
   this.connection = null;
@@ -56,8 +56,8 @@ export function Connection(options: {
 }
 
 
-let defaultMessageHandler = function (buffer: any) {
-  let response = new Response(buffer);
+const defaultMessageHandler = function (buffer: any) {
+  const response = new Response(buffer);
   response.parse();
   return response;
 };
@@ -65,10 +65,10 @@ let defaultMessageHandler = function (buffer: any) {
 
 //
 // Connection handlers
-let errorHandler = function (sock: { getConnection: () => any; handleError: (arg0: any) => void; }) {
+const errorHandler = function (sock: { getConnection: () => any; handleError: (arg0: any) => void; }) {
   return function (err: any) {
     // Debug information
-    let conn = sock.getConnection();
+    const conn = sock.getConnection();
     if (conn.debug) {
       console.trace(f('connection %s for [%s:%s] errored out with [%s]', conn.id, conn.host, conn.port, JSON.stringify(err)));
     }
@@ -78,10 +78,10 @@ let errorHandler = function (sock: { getConnection: () => any; handleError: (arg
   };
 };
 
-let timeoutHandler = function (self: { getConnection: () => any; handleTimeout: () => void; }) {
+const timeoutHandler = function (self: { getConnection: () => any; handleTimeout: () => void; }) {
   return function () {
     // Debug information
-    let conn = self.getConnection();
+    const conn = self.getConnection();
     if (conn.debug) {
       console.trace(f('connection %s for [%s:%s] timed out', conn.id, conn.host, conn.port));
     }
@@ -90,10 +90,10 @@ let timeoutHandler = function (self: { getConnection: () => any; handleTimeout: 
   };
 };
 
-let closeHandler = function (self: { getConnection: () => any; handleClose: (arg0: any) => void; }) {
+const closeHandler = function (self: { getConnection: () => any; handleClose: (arg0: any) => void; }) {
   return function (hadError: any) {
     // Debug information
-    let conn = self.getConnection();
+    const conn = self.getConnection();
     if (conn.debug) {
       console.trace(f('connection %s with for [%s:%s] closed', conn.id, conn.host, conn.port));
     }
@@ -102,15 +102,15 @@ let closeHandler = function (self: { getConnection: () => any; handleClose: (arg
   };
 };
 
-let dataHandler = function (self: any) {
+const dataHandler = function (self: any) {
   return function (data: any) {
-    let maxBsonMessageSize = self.wrapper.maxBsonMessageSize;
+    const maxBsonMessageSize = self.wrapper.maxBsonMessageSize;
     // Parse until we are done with the data
     while (data.length > 0) {
       // If we still have bytes to read on the current message
       if (self.bytesRead > 0 && self.sizeOfMessage > 0) {
         // Calculate the amount of remaining bytes
-        let remainingBytesToRead = self.sizeOfMessage - self.bytesRead;
+        const remainingBytesToRead = self.sizeOfMessage - self.bytesRead;
         // Check if the current chunk contains the rest of the message
         if (remainingBytesToRead > data.length) {
           // Copy the new data into the exiting buffer (should have been allocated when we know the message size)
@@ -128,7 +128,7 @@ let dataHandler = function (self: any) {
 
           // Emit current complete message
           try {
-            let emitBuffer = self.buffer;
+            const emitBuffer = self.buffer;
             // Reset state of buffer
             self.buffer = null;
             self.sizeOfMessage = 0;
@@ -139,7 +139,7 @@ let dataHandler = function (self: any) {
             self.handleData(emitBuffer);
 
           } catch (err) {
-            let errorObject = {
+            const errorObject = {
               err: 'socketHandler',
               trace: err,
               bin: self.buffer,
@@ -160,7 +160,7 @@ let dataHandler = function (self: any) {
           // If we have enough bytes to determine the message size let's do it
           if (self.stubBuffer.length + data.length > 4) {
             // Prepad the data
-            let newData = new Buffer(self.stubBuffer.length + data.length);
+            const newData = new Buffer(self.stubBuffer.length + data.length);
             self.stubBuffer.copy(newData, 0);
             data.copy(newData, self.stubBuffer.length);
             // Reassign for parsing
@@ -175,7 +175,7 @@ let dataHandler = function (self: any) {
           } else {
 
             // Add the the bytes to the stub buffer
-            let newStubBuffer = new Buffer(self.stubBuffer.length + data.length);
+            const newStubBuffer = new Buffer(self.stubBuffer.length + data.length);
             // Copy existing stub buffer
             self.stubBuffer.copy(newStubBuffer, 0);
             // Copy missing part of the data
@@ -189,12 +189,12 @@ let dataHandler = function (self: any) {
             // var totalLength = data.readUInt32LE(0);
             // var totalLength = data[0] | data[1] << 8 | data[2] << 16 | data[3] << 24;
             // var totalLength = data[0]  | data[1] << 8 | data[2] << 16 | data[3] << 24;
-            let totalLength = Utils.encodeTotalLength(data);
+            const totalLength = Utils.encodeTotalLength(data);
 
-            let sizeOfMessage = totalLength + 8;
+            const sizeOfMessage = totalLength + 8;
             // If we have a negative totalLength emit error and return
             if (sizeOfMessage < 0 || sizeOfMessage > maxBsonMessageSize) {
-              let errorObject = {
+              const errorObject = {
                 err: 'socketHandler',
                 trace: '',
                 bin: self.buffer,
@@ -224,9 +224,9 @@ let dataHandler = function (self: any) {
               // Exit parsing loop
               data = new Buffer(0);
 
-            } else if (sizeOfMessage > 8 && sizeOfMessage < maxBsonMessageSize && sizeOfMessage == data.length) {
+            } else if (sizeOfMessage > 8 && sizeOfMessage < maxBsonMessageSize && sizeOfMessage === data.length) {
               try {
-                let emitBuffer = data;
+                const emitBuffer = data;
                 // Reset state of buffer
                 self.buffer = null;
                 self.sizeOfMessage = 0;
@@ -238,7 +238,7 @@ let dataHandler = function (self: any) {
                 self.handleData(emitBuffer);
 
               } catch (err) {
-                let errorObject = {
+                const errorObject = {
                   err: 'socketHandler',
                   trace: err,
                   bin: self.buffer,
@@ -252,7 +252,7 @@ let dataHandler = function (self: any) {
                 self.handleParseError(errorObject);
               }
             } else if (sizeOfMessage <= 8 || sizeOfMessage > maxBsonMessageSize) {
-              let errorObject: any = {
+              const errorObject: any = {
                 err: 'socketHandler',
                 trace: null,
                 bin: data,
@@ -272,7 +272,7 @@ let dataHandler = function (self: any) {
               // Exit parsing loop
               data = new Buffer(0);
             } else {
-              let emitBuffer = data.slice(0, sizeOfMessage);
+              const emitBuffer = data.slice(0, sizeOfMessage);
               // Reset state of buffer
               self.buffer = null;
               self.bytesRead = 0;
@@ -302,7 +302,7 @@ let dataHandler = function (self: any) {
  * @constructor
  * @param connection
  */
-let AsyncSock = function (connection: any) {
+const AsyncSock = function (connection: any) {
   this.wrapper = connection;
   this.connection = null;
 
@@ -310,7 +310,7 @@ let AsyncSock = function (connection: any) {
   // Add event listener
   EventEmitter.call(this);
 
-  let self = this;
+  const self = this;
 
 
   // Create new connection instance
@@ -339,7 +339,7 @@ let AsyncSock = function (connection: any) {
   self.connection.on('data', dataHandler(self));
 
   // copy previous registered callbacks
-  let eventTypes = Object.keys(self.wrapper.callbacks);
+  const eventTypes = Object.keys(self.wrapper.callbacks);
   eventTypes.forEach(function (key) {
     self.wrapper.callbacks[key].forEach(function (fn: any) {
       self.on(key, fn);
@@ -351,8 +351,8 @@ let AsyncSock = function (connection: any) {
 inherits(AsyncSock, EventEmitter);
 
 AsyncSock.prototype.emit = function () {
-  let args = Array.prototype.slice.call(arguments);
-  let type = args.shift();
+  const args = Array.prototype.slice.call(arguments);
+  const type = args.shift();
 
   if (args.length > 0 && _.isError(args[0])) {
     args.unshift(type);
@@ -411,7 +411,7 @@ AsyncSock.prototype.destroy = function (fn: any) {
 
 
 AsyncSock.prototype.write = function (buffer: any, fn: any) {
-  let self = this;
+  const self = this;
 
   if (fn) {
     self.once('data', fn);
@@ -444,7 +444,7 @@ AsyncSock.prototype.isConnected = function () {
  */
 
 AsyncSock.prototype.handleError = function (err: any) {
-  let self = this;
+  const self = this;
   if (self.listeners('error').length > 0) {
     self.emit('error', err);
   }
@@ -455,8 +455,8 @@ AsyncSock.prototype.handleError = function (err: any) {
  */
 
 AsyncSock.prototype.handleTimeout = function () {
-  let self = this;
-  let conn = self.getConnection();
+  const self = this;
+  const conn = self.getConnection();
   self.emit('timeout'
     , f('connection %s to %s:%s timed out', conn.id, conn.host, conn.port)
   );
@@ -468,7 +468,7 @@ AsyncSock.prototype.handleTimeout = function () {
  */
 
 AsyncSock.prototype.handleClose = function (hadError: any) {
-  let self = this;
+  const self = this;
   // var conn = self.getConnection()
   if (!hadError) {
     self.connection = null;
@@ -483,8 +483,8 @@ AsyncSock.prototype.handleClose = function (hadError: any) {
  */
 
 AsyncSock.prototype.handleData = function (buffer: any) {
-  let self = this;
-  let response = self.getConnection().messageHandler(buffer, self);
+  const self = this;
+  const response = self.getConnection().messageHandler(buffer, self);
   self.emit('data', response);
 };
 
@@ -493,7 +493,7 @@ AsyncSock.prototype.handleData = function (buffer: any) {
  */
 
 AsyncSock.prototype.handleParseError = function (errorObject: any) {
-  let self = this;
+  const self = this;
   return self.emit('parseError', errorObject);
 };
 
@@ -511,13 +511,13 @@ AsyncSock.prototype.handleConnect = function () {
 Connection.prototype.connect = function () {
   this.state = 'connect';
 
-  let args = Array.prototype.slice.call(arguments);
+  const args = Array.prototype.slice.call(arguments);
   let _options = null;
 
   if (args.length > 0) {
-    if (args.length == 1) {
+    if (args.length === 1) {
       // if first argument is an function then it is an async connection
-      if (typeof args[0] == 'function') {
+      if (typeof args[0] === 'function') {
         _options = {sync: false};
         this.on('connect', args[0]);
       } else {
@@ -533,10 +533,10 @@ Connection.prototype.connect = function () {
   }
 
 
-  let self = this;
+  const self = this;
   _options = _options || {sync: false};
   // Check if we are overriding the promoteLongs
-  if (typeof _options.promoteLongs == 'boolean') {
+  if (typeof _options.promoteLongs === 'boolean') {
     self.responseOptions.promoteLongs = _options.promoteLongs;
   }
 

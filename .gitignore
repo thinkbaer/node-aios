@@ -8,3 +8,4 @@ shadow_settings.properties
 .npmignore
 build/
 cmake-build-debug/
+tmp

@@ -28,7 +28,7 @@
   ],
   "private": true,
   "dependencies": {
-    "bson": "^3.0.2",
+    "bson": "^4.0.4",
     "lodash": "^4.17.15"
   },
   "devDependencies": {
