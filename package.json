@@ -35,7 +35,7 @@
     "@allgemein/packaging": "^1.1.0",
     "@types/bson": "^4.0.2",
     "@types/lodash": "^4.14.156",
-    "codecov": "^3.7.0",
+    "codecov": "^3.7.1",
     "codelyzer": "^5.2.0",
     "del": "^5.1.0",
     "gulp": "^4.0.2",
