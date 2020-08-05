@@ -13,7 +13,7 @@ services:
     shm_size: 1gb
 
   aios:
-    image: thinkbaer/aios:0.5.0
+    image: thinkbaer/aios:0.6.0
     ports:
       - 127.0.0.1:8118:8118
     links:
