@@ -1,7 +1,7 @@
 import {inherits} from 'util';
 import * as _ from 'lodash';
 
-let dataSourceTypes = {};
+const dataSourceTypes = {};
 
 export function DataSource(server: any, options: any) {
   options = options || {};
@@ -11,7 +11,7 @@ export function DataSource(server: any, options: any) {
   this.type = options.type;
   this.server = server;
 
-};
+}
 
 // @ts-ignore
 DataSource.get = function (type: any) {
@@ -31,14 +31,14 @@ DataSource.prototype.getType = function () {
 };
 
 DataSource.prototype.register = function (fn: any) {
-  let self = this;
+  const self = this;
   if (fn && _.isFunction(fn)) {
     this.server.command('ds', {method: 'register', spec: self.options}, function (err: any, response: any) {
       self.options = _.merge(self.options, response.spec);
       fn(err, self);
     });
   } else {
-    let response = this.server.command('ds', {method: 'register', spec: self.options}, fn);
+    const response = this.server.command('ds', {method: 'register', spec: self.options}, fn);
     this.options = _.merge(this.options, response.spec);
     return this;
   }
@@ -57,7 +57,7 @@ DataSource.prototype.listDatabases = function () {
 };
 
 
-let JdbcDataSource = function (server: any, options: any) {
+const JdbcDataSource = function (server: any, options: any) {
   options = options || {};
   DataSource.call(this, server, options);
 };
@@ -68,7 +68,7 @@ inherits(JdbcDataSource, DataSource);
 
 
 JdbcDataSource.prototype.execute = function (sql: any, fn: any) {
-  let data = {
+  const data = {
     dsn: this.getName(),
     query: {
       '@t': 'jdbc.q.exec',
@@ -88,7 +88,7 @@ JdbcDataSource.prototype.execute = function (sql: any, fn: any) {
       }
     });
   } else {
-    let response = this.server.command('ds.query', data, fn);
+    const response = this.server.command('ds.query', data, fn);
     delete response.result['@t'];
     return response.result;
   }
@@ -99,7 +99,7 @@ JdbcDataSource.prototype.select = function (sql: any, fn: any) {
 };
 
 JdbcDataSource.prototype.query = function (sql: any, fn: any) {
-  let data = {
+  const data = {
     dsn: this.getName(),
     query: {
       '@t': 'jdbc.q.select',
@@ -116,13 +116,13 @@ JdbcDataSource.prototype.query = function (sql: any, fn: any) {
       }
     });
   } else {
-    let response = this.server.command('ds.query', data, fn);
+    const response = this.server.command('ds.query', data, fn);
     return response.result.data;
   }
 };
 
 JdbcDataSource.prototype.update = function (sql: any, fn: any) {
-  let data = {
+  const data = {
     dsn: this.getName(),
     query: {
       '@t': 'jdbc.q.update',
@@ -142,7 +142,7 @@ JdbcDataSource.prototype.update = function (sql: any, fn: any) {
       }
     });
   } else {
-    let response = this.server.command('ds.query', data, fn);
+    const response = this.server.command('ds.query', data, fn);
     delete response.result['@t'];
     return response.result;
   }
@@ -150,7 +150,7 @@ JdbcDataSource.prototype.update = function (sql: any, fn: any) {
 };
 
 JdbcDataSource.prototype.executeBatch = function (sqls: any, fn: any) {
-  let data = {
+  const data = {
     dsn: this.getName(),
     query: {
       '@t': 'jdbc.q.batch',
@@ -170,31 +170,37 @@ JdbcDataSource.prototype.executeBatch = function (sqls: any, fn: any) {
       }
     });
   } else {
-    let response = this.server.command('ds.query', data, fn);
+    const response = this.server.command('ds.query', data, fn);
     delete response.result['@t'];
     return response.result;
   }
 };
 
-let _processCatalogResults = function (res: any) {
-  let dbs: any = [];
+const _processCatalogResults = function (res: any) {
+  const dbs: any = [];
 
-  res.result.catalogs.forEach(function (x: any) {
-    let db: any = {name: x, schemas: []};
-    dbs.push(db);
+  if (res && res.result) {
+    if (res.result.catalogs) {
+      res.result.catalogs.forEach(function (x: any) {
+        const db: any = {name: x, schemas: []};
+        dbs.push(db);
 
-    res.result.schemas.forEach(function (s: any) {
-      if (s.catalog == x && s.schema) {
-        db.schemas.push(s.schema);
-      }
-    });
-  });
+        if (res.result.schemas) {
+          res.result.schemas.forEach(function (s: any) {
+            if (s.catalog === x && s.schema) {
+              db.schemas.push(s.schema);
+            }
+          });
+        }
+      });
+    }
+  }
 
   return dbs;
 };
 
 JdbcDataSource.prototype.listCatalogs = function (fn: any) {
-  let data = {
+  const data = {
     dsn: this.getName(),
     query: {
       '@t': 'jdbc.q.schema'
@@ -203,11 +209,11 @@ JdbcDataSource.prototype.listCatalogs = function (fn: any) {
 
   if (fn && _.isFunction(fn)) {
     this.server.command('ds.query', data, function (err: any, res: any) {
-      let dbs = _processCatalogResults(res);
+      const dbs = _processCatalogResults(res);
       fn(err, dbs);
     });
   } else {
-    let response = this.server.command('ds.query', data, fn);
+    const response = this.server.command('ds.query', data, fn);
     return _processCatalogResults(response);
   }
 
@@ -219,7 +225,7 @@ JdbcDataSource.prototype.listDatabases = function (fn: any) {
 };
 
 JdbcDataSource.prototype.listTables = function (selection: any, fn: any) {
-  let data: any = {
+  const data: any = {
     dsn: this.getName(),
     query: {
       '@t': 'jdbc.q.table',
@@ -227,8 +233,8 @@ JdbcDataSource.prototype.listTables = function (selection: any, fn: any) {
   };
 
   if (_.isString(selection)) {
-    let split = selection.split('.');
-    if (split.length == 2) {
+    const split = selection.split('.');
+    if (split.length === 2) {
       data.query.catalog = split[1];
       data.query.schema = split[0];
     } else {
@@ -253,7 +259,7 @@ JdbcDataSource.prototype.listTables = function (selection: any, fn: any) {
 
     });
   } else {
-    let response = this.server.command('ds.query', data, fn);
+    const response = this.server.command('ds.query', data, fn);
     return response.result.tables;
   }
 
