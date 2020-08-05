@@ -9,3 +9,4 @@ shadow_settings.properties
 build/
 cmake-build-debug/
 tmp
+package-lock.json
